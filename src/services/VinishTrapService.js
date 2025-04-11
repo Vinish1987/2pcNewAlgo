@@ -294,7 +294,11 @@ export const backtest = (data, initialCapital = 10000, options = {}) => {
   };
 };
 
-export default {
-  generateTrapZones,
-  backtest
-}; 
+// Assign the instance to a variable before exporting
+const vinishTrapServiceInstance = {
+  calculateZRSI,
+  calculateRSI,
+  calculateRSIHeikinAshi,
+  generateTrapZones
+};
+export default vinishTrapServiceInstance; 

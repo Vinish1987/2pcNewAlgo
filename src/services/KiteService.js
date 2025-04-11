@@ -115,4 +115,6 @@ class KiteService {
   }
 }
 
-export default new KiteService(); 
+// Assign the instance to a variable before exporting
+const kiteServiceInstance = new KiteService();
+export default kiteServiceInstance; 
