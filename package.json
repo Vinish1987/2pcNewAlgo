@@ -12,6 +12,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
     "react-scripts": "5.0.1",
+    "recharts": "^2.15.2",
     "styled-components": "^6.1.1",
     "web-vitals": "^2.1.4"
   },
@@ -39,4 +40,4 @@
       "last 1 safari version"
     ]
   }
-} 
+}
