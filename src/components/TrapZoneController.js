@@ -78,14 +78,14 @@ const TrapZoneController = () => {
   const [rsiData, setRsiData] = useState([]);
   const [signals, setSignals] = useState([]);
   const [zoneBoundaries, setZoneBoundaries] = useState(null);
-  const [symbols, setSymbols] = useState([
+  const [symbols] = useState([
     { value: 'AAPL', label: 'Apple Inc.' },
     { value: 'MSFT', label: 'Microsoft Corp.' },
     { value: 'GOOGL', label: 'Alphabet Inc.' },
     { value: 'AMZN', label: 'Amazon.com Inc.' },
     { value: 'TSLA', label: 'Tesla Inc.' },
   ]);
-  const [timeframes, setTimeframes] = useState([
+  const [timeframes] = useState([
     { value: '1min', label: '1m' },
     { value: '5min', label: '5m' },
     { value: '1day', label: '1D' },
@@ -108,43 +108,43 @@ const TrapZoneController = () => {
 
   // Load data when symbol or timeframe changes
   useEffect(() => {
-    loadData();
-  }, [selectedSymbol, selectedTimeframe]);
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+        // Get candle data
+        const candleData = await DataService.getCandleData(
+          selectedSymbol,
+          selectedTimeframe
+        );
 
-      // Get candle data
-      const candleData = await DataService.getCandleData(
-        selectedSymbol,
-        selectedTimeframe
-      );
+        if (!candleData || candleData.length === 0) {
+          setError('No data available for the selected symbol and timeframe');
+          setIsLoading(false);
+          return;
+        }
 
-      if (!candleData || candleData.length === 0) {
-        setError('No data available for the selected symbol and timeframe');
+        // Process data for the Vinish Trap Zone indicator
+        const { rsiData, signals, zoneBoundaries } = VinishTrapService.generateTrapZones(
+          candleData,
+          algoParams
+        );
+
+        setChartData(candleData);
+        setRsiData(rsiData);
+        setSignals(signals);
+        setZoneBoundaries(zoneBoundaries);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setError(`Error loading data: ${error.message}`);
+      } finally {
         setIsLoading(false);
-        return;
       }
+    };
 
-      // Process data for the Vinish Trap Zone indicator
-      const { rsiData, signals, zoneBoundaries } = VinishTrapService.generateTrapZones(
-        candleData,
-        algoParams
-      );
-
-      setChartData(candleData);
-      setRsiData(rsiData);
-      setSignals(signals);
-      setZoneBoundaries(zoneBoundaries);
-    } catch (error) {
-      console.error('Error loading data:', error);
-      setError(`Error loading data: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    loadData();
+  }, [selectedSymbol, selectedTimeframe, algoParams]);
 
   const handleSymbolChange = (e) => {
     setSelectedSymbol(e.target.value);

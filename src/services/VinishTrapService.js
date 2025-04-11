@@ -62,27 +62,6 @@ const calculateRSI = (data, period) => {
   return rsiValues;
 };
 
-// Mode selectable RSI function
-const calculateModeRSI = (data, period, mode, smoothing = 1) => {
-  const zrsiValues = calculateZRSI(data, period);
-  if (!mode) return zrsiValues;
-  
-  // Apply smoothing similar to HA
-  const smoothedValues = [];
-  let smoothed = null;
-  
-  for (let i = 0; i < zrsiValues.length; i++) {
-    if (smoothed === null) {
-      smoothed = zrsiValues[i];
-    } else {
-      smoothed = (smoothed + zrsiValues[i]) / 2;
-    }
-    smoothedValues.push(smoothed);
-  }
-  
-  return smoothedValues;
-};
-
 // RSI Heikin-Ashi generation function
 const calculateRSIHeikinAshi = (data, period, smoothing = 1) => {
   if (!data || data.length < period + 1) return { open: [], high: [], low: [], close: [] };
