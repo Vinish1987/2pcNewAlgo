@@ -144,3 +144,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - TradingView for the Pine Script language reference
 - Lightweight Charts for the charting library # 2pcNewAlgo
 # 2pcNewAlgo
+# FE_2PC_Algo

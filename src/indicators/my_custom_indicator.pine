@@ -1,0 +1,33 @@
+//@version=5
+indicator("Custom Trend Indicator", overlay=true)
+
+// Input parameters
+lengthEMA1 = input.int(9, title="EMA 1 Length", minval=1)
+lengthEMA2 = input.int(21, title="EMA 2 Length", minval=1)
+rsiLength = input.int(14, title="RSI Length", minval=1)
+rsiOverbought = input.int(70, title="RSI Overbought Level", minval=50, maxval=100)
+rsiOversold = input.int(30, title="RSI Oversold Level", minval=0, maxval=50)
+
+// Calculate indicators
+ema1 = ta.ema(close, lengthEMA1)
+ema2 = ta.ema(close, lengthEMA2)
+rsi = ta.rsi(close, rsiLength)
+
+// Determine trend conditions
+bullishTrend = ema1 > ema2 and rsi > 50
+bearishTrend = ema1 < ema2 and rsi < 50
+
+// Generate buy/sell signals
+buySignal = bullishTrend and rsi[1] < 50 and rsi > 50
+sellSignal = bearishTrend and rsi[1] > 50 and rsi < 50
+
+// Plot EMAs
+plot(ema1, color=color.blue, title="Fast EMA")
+plot(ema2, color=color.red, title="Slow EMA")
+
+// Plot buy/sell signals
+plotshape(buySignal, title="Buy Signal", location=location.belowbar, color=color.green, style=shape.triangleup, size=size.small)
+plotshape(sellSignal, title="Sell Signal", location=location.abovebar, color=color.red, style=shape.triangledown, size=size.small)
+
+// Background coloring based on trend
+bgcolor(bullishTrend ? color.new(color.green, 90) : bearishTrend ? color.new(color.red, 90) : na) 
