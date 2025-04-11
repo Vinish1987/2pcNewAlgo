@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { createChart } from 'lightweight-charts';
 import styled from 'styled-components';
 
@@ -21,14 +21,18 @@ const TrapZoneChart = ({ data, rsiData, signals, zoneBoundaries }) => {
   const chartRef = useRef();
   const [error, setError] = useState(null);
 
+  const sortedData = useMemo(() => {
+    return [...data].sort((a, b) => a.time - b.time);
+  }, [data]);
+
+  const sortedRsiData = useMemo(() => {
+    return [...rsiData].sort((a, b) => a.time - b.time);
+  }, [rsiData]);
+
   useEffect(() => {
-    if (!data || data.length === 0 || !rsiData || rsiData.length === 0) return;
+    if (!sortedData || sortedData.length === 0 || !sortedRsiData || sortedRsiData.length === 0) return;
     
     try {
-      // Ensure data is sorted by time
-      const sortedData = [...data].sort((a, b) => a.time - b.time);
-      const sortedRsiData = [...rsiData].sort((a, b) => a.time - b.time);
-      
       // Clean up previous chart instance
       if (chartRef.current) {
         chartRef.current.remove();
@@ -219,8 +223,10 @@ const TrapZoneChart = ({ data, rsiData, signals, zoneBoundaries }) => {
       
       // Handle resize
       const handleResize = () => {
-        chart.applyOptions({
-          width: chartContainerRef.current.clientWidth,
+        requestAnimationFrame(() => {
+          chart.applyOptions({
+            width: chartContainerRef.current.clientWidth,
+          });
         });
       };
       
@@ -237,7 +243,7 @@ const TrapZoneChart = ({ data, rsiData, signals, zoneBoundaries }) => {
       console.error("Chart error:", err);
       setError(`Error rendering chart: ${err.message}`);
     }
-  }, [data, rsiData, signals, zoneBoundaries]);
+  }, [sortedData, sortedRsiData, signals, zoneBoundaries]);
   
   return (
     <>
